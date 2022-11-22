@@ -1,7 +1,5 @@
 package client.views;
 
-
-        
 import server.DriveApi;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -77,6 +75,9 @@ public class ClientView extends JFrame {
     private ArrayList<JLabel> listUserOnline;
     private DefaultTableModel fileTableModel = new DefaultTableModel(0, 0);
     private ArrayList<FileModel> listFile = new ArrayList<FileModel>();
+
+    private int luongThread = -1;
+    private final Thread[] threads = new Thread[1000000];
 
     /**
      * Create the frame.
@@ -159,22 +160,39 @@ public class ClientView extends JFrame {
                 if (result == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
                     Path path = selectedFile.toPath();
-                    String mimeType = "";
-                    try {
-                        mimeType = Files.probeContentType(path);
-                        DriveApi drive = new DriveApi();
-                        handleSendFile(drive.upload(selectedFile.getName(), mimeType, selectedFile.getAbsolutePath()), selectedFile.getName());
-                    } catch (IOException ex) {
-                        Logger.getLogger(ClientView.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (GeneralSecurityException ex) {
-                        Logger.getLogger(ClientView.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    ////////////////////////
+                    luongThread++;
+                    System.out.println(luongThread);
+                    int cur = luongThread;
+                    threads[cur] = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                if (cur != 0) {
+                                    threads[cur - 1].join();
+                                }
+                                final String mimeType = Files.probeContentType(path);
+                                final DriveApi drive = new DriveApi();
+                                btnFile.setText("Sending...");
+                                btnFile.setEnabled(false);
+                                handleSendFile(drive.upload(selectedFile.getName(), mimeType, selectedFile.getAbsolutePath()), selectedFile.getName());
+                            } catch (IOException ex) {
+                                Logger.getLogger(ClientView.class.getName()).log(Level.SEVERE, null, ex);
+                            } catch (GeneralSecurityException ex) {
+                                Logger.getLogger(ClientView.class.getName()).log(Level.SEVERE, null, ex);
+                            } catch (InterruptedException ex) {
+                                Logger.getLogger(ClientView.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                    });
+                    threads[cur].start();
+                    ////////////
                 }
             }
         });
 
-        btnFile.setFont(new Font("Tahoma", Font.PLAIN, 20));
-        btnFile.setBounds(770, 617, 90, 42);
+        btnFile.setFont(new Font("Tahoma", Font.PLAIN, 12));
+        btnFile.setBounds(770, 617, 110, 42);
         contentPane.add(btnFile);
 
         btnSendMess = new JButton("Send");
@@ -187,8 +205,8 @@ public class ClientView extends JFrame {
             }
         });
 
-        btnSendMess.setFont(new Font("Tahoma", Font.PLAIN, 20));
-        btnSendMess.setBounds(865, 617, 90, 42);
+        btnSendMess.setFont(new Font("Tahoma", Font.PLAIN, 12));
+        btnSendMess.setBounds(885, 617, 70, 42);
         contentPane.add(btnSendMess);
 
         JLabel lblNewLabel_2 = new JLabel("Chatting with:");
@@ -282,7 +300,7 @@ public class ClientView extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int row = fileTable.getSelectedRow();
-                FileViewer fileViewer = new FileViewer("https://drive.google.com/file/d/"+listFile.get(row).getFileID());
+                FileViewer fileViewer = new FileViewer("https://drive.google.com/file/d/" + listFile.get(row).getFileID());
                 fileViewer.viewFile();
             }
         });
@@ -338,6 +356,8 @@ public class ClientView extends JFrame {
             txtFindUser.setText(curentChatUser.equals("all") ? "all" : curentChatUser);
             handleFindUser(curentChatUser.equals("all") ? "all" : curentChatUser);
             setBodyMess1("Sent file " + fileName);
+            btnFile.setText("File");
+            btnFile.setEnabled(true);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
