@@ -82,7 +82,7 @@ public class ClientConfigView extends JFrame {
         });
 
         JLabel lblNewLabel_1 = new JLabel("Connect to MessConnect server");
-        lblNewLabel_1.setBounds(172, 53, 89, 14);
+        lblNewLabel_1.setBounds(150, 53, 200, 14);
         contentPane.add(lblNewLabel_1);
 
         JButton btnConnect = new JButton("Connect");

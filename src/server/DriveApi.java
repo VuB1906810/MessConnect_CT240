@@ -104,7 +104,7 @@ public class DriveApi {
         }
     }
 
-    public static void main(String... args) throws IOException, GeneralSecurityException {
-        System.out.println(upload("TenFile111", "image/jpeg", "C:\\Users\\Lieu Tuan Vu\\Desktop\\5eae2afb-cacc-416b-9187-d8b9a6732684.jpg"));
-    }
+//    public static void main(String... args) throws IOException, GeneralSecurityException {
+//        System.out.println(upload("TenFile111", "image/jpeg", "C:\\Users\\Lieu Tuan Vu\\Desktop\\5eae2afb-cacc-416b-9187-d8b9a6732684.jpg"));
+//    }
 }

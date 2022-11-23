@@ -4,11 +4,9 @@ package server;
 //It contains two classes : Server and ClientHandler
 //Save file as Server.java
 import java.io.*;
-import java.text.*;
 import java.util.*;
 import java.sql.Connection;
 
-import client.views.ClientView;
 import models.MessageModel;
 import models.FileModel;
 import models.UserModel;
