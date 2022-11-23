@@ -66,7 +66,6 @@ public class FileModel {
                 } else {
                     file = "I:@" + userReceive + ":";
                 }
-//                file = "I:@" + userSend + ":";
                 file += "FileId: " + rs.getString("file_id") + ", ";
                 file += "FileName: " + rs.getString("file_name");
                 list.add(new String(file));
